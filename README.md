@@ -10,11 +10,27 @@ Fisheye is a 3D game engine written and usable in C++. The intent was to create 
 ## Features
 
 - *Scene graph, gameobjects and components*
-  A game is composed of tree-like *scenes*; hierarchies of *gameobjects*, using an Entity-Component approach (as in Unity)
 
-- Rendering and physics server for efficient processing
+  A game is composed of tree-like *scenes*; hierarchies of *gameobjects*, using an Entity-Component approach (as used by the Unity engine). Components define the behaviors of gameobjects. The user can create new components easily.
+
+- *Deffered rendering*
+
+  The rendering happens in two passes. First, we draw all the rendering informations (normals, albedos, PBR data, ...) in world-space to 2D buffers, then we use the data to generate the final texture. This saves time on lighting calculation, allows us to have a very big number of lights in the scene with only a small performance cost.
+
+- *Physics engine*
+
+  Our physics engine runs on its own loop and is partly inspired on a Valve talk on the Source engine, in order to compute and solve collisions efficiently.
+
+- *Rendering and physics servers*
+
+  For efficient processing of batch operations, we took inspiration from ECS architecture and the Godot game engine. Rendering code and physics-related code is ran by *servers* akin to ECS systems, which work fluidly around the scene hierarchy and result in more efficient processing.
 
 > The physics engine is still experimental. Things may not work as expected (particularily rotation-wise :s )
+>
+> For now, the physics update loop runs on the same thread as the render update loop. This will change in the future.
+
+- *Additional demo candy*
+  A fully functional voxel and chunking system, with simple world generation based on noise functions, has been implemented for the 'voxel submarine' demo. The demo and its components are also present 
 
 ## How To Use
 
@@ -100,8 +116,6 @@ This gives us five virtual functions that we may override to our liking :
 
 - *onEnterScene() & onExitScene()*, called when the owning gameobject enters or exits a scene
 - *onUpdate($\Delta_t$)), onPhysicsUpdate($\Delta_t$) et onLateUpdate($\Delta_t$)* are called at different stages of the frame's computation.
-
-> For now, the update functions are called synchronously. In the future, *update* and *physicsUpdate* will each have their own thread.
 
 By inheriting other components (and creating new virtual functions to override), we can easily and organically expand the capabilities of our gameobjects. 
 
