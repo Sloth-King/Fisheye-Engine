@@ -47,9 +47,7 @@ Build and launch using the provided Cmake. This gives us a fully black window.
 Let us add a cube and a light to our scene. We fill up the *setupScene* function called in our main.
 
 ```cpp
-void setupGameScene(){
-  
-oid setupScene(Game& game){
+void setupScene(Game& game){
     Scene scene; // Create a scene to contain our gameobjects
     GameObject world; // root of our scene
 
@@ -121,15 +119,15 @@ public:
             jump(); 
     }
     C_PlayerController(){
-      // Exemple d'utilisation du gestionnaires d'entrées utilisateur.
-      // The lambda is necessary as we can't cast a method to a generic function signature.
+      // user input callback registration
+      // The lambda is necessary as we can't cast a method to a generic function signature
       Input::addInputListener(
           [& /*capture ambient scope*/](const InputEvent & e){
               inputCallback(e);
           }
       );
 
-      // définies ici pour l'exemple mais c'est mieux de le faire clairement au lancement du jeu
+      // Defined here for the sake of the example. It would be better to define them once and for all at the game start.
       Input::addKeybind( "move_right",
         KeySpec(BINDTYPE_KEYBOARD, GLFW_KEY_D)
       );
@@ -145,7 +143,7 @@ public:
 
       delta *= movement_speed;
 
-      // si notre gameobject n'a pas de transform, on sort.
+      // check if we do have a transform
       if (!getOwner()->hasComponent<C_Transform>()) return;
 
       auto* transform = getOwner()->getComponent<C_Transform>();
@@ -158,25 +156,24 @@ public:
       }
   }
 };
-
 ```
+Then, we just need to add this component to a gameobject in order to move it around:
 
-Il suffit ensuite d'ajouter ce composant sur un gameobject pour obtenir les comportements qu'il décrit.
+> For now, those 9 compoments are available in the engine :
+> 
+> - C_Transform
+> - C_RigidBody
+> - C_Collider
+> - C_Mesh
+> - C_Camera
+> - C_Light
+> - C_PlayerController\*
+> - C_MapManager\*
+> - C_voxelMesh\*
+> - 
+> _\*créés pour la démo technique du sous marin_
+>
+> In the future, we'd like to create a diverse and extensive library of authored components.
 
-#boxed[Pour l'instant, seul 9 composants sont disponibles dans le moteur :
-- C_Transform
-- C_RigidBody
-- C_Collider
-- C_Mesh
-- C_Camera
-- C_Light
-- C_PlayerController\*
-- C_MapManager\*
-- C_voxelMesh\*
-
-_\*créés pour la démo technique du sous marin_
-
-Nous aimerions à terme avoir une librairie de composants divers et variés afin de faciliter le développement de jeux.
-]
-
+Thanks and enjoy !
 
