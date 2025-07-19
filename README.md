@@ -9,12 +9,16 @@ Fisheye is a 3D game engine written and usable in C++. The intention was to crea
 
 ## Features
 
+
+
+> The physics engine is still experimental. Things may not work as expected.
+
 ## How To Use
 
 We'll create a very simple game to show how one may use the engine.
 
 ### Initial setup
-Let's start by creating a *Game*
+Let's start by creating a *Game* in our main function, setting some of its parameters, initialize openGL and start the update loops.
 
 ```cpp
 #include "engine/includes/core.h" // imports core engine features
@@ -40,82 +44,87 @@ Build and launch using the provided Cmake. This gives us a fully black window.
 
 ### Cube and light
 
-Let us add a cube and a light to our scene.
+Let us add a cube and a light to our scene. We fill up the *setupScene* function called in our main.
 
 ```cpp
 void setupGameScene(){
   
 oid setupScene(Game& game){
-    Scene scene; // On crée une scène qui contiendra nos objet
-    GameObject world; // On crée notre objet racine
+    Scene scene; // Create a scene to contain our gameobjects
+    GameObject world; // root of our scene
 
-    // chargement d'un obj
+    // load an obj file
     Mesh cube = ResourceLoader::load_mesh_obj("../game/resources/meshes/supercube.obj");
 
-    // On crée notre material. Les handles sont des objets référence à des ressources.
-    //Tant qu'au moins une handle existe, la ressource n'est pas libérée.
+    // We create a PBR material object. A handle is the (possibly shared) owner of a resource
+    // As long as one handle exists, the resource is not freed up (akin to a shared_ptr)
     cube.material = Handle<MaterialPBR>(Texture("../game/resources/textures/logo.jpg"));
 
-    // On ajoute un composant Transform à notre monde
-    // ainsi qu'un composant mesh (pour l'instant directement sur le monde)
-    // addComponent renvoie un pointeur vers le composant nouvellement créé, afin de le modifier
+    // Add a 'Transform' compoment to the world
+    // addComponent creates the component on the gameobject and returns a pointer to it.
+    // The pointer is guaranteed to be valid for the lifetime of the gameobject.
     C_Transform* t = world->addComponent<C_Transform>(); 
-    t->setPosition(glm::vec3(0, -0.2, 0));
+    t->setPosition(glm::vec3(0, -0.2, 0)); // using glm as a placeholder, as we'll be creating our own algebra module.
     t->setScale(glm::vec3(0.1, 0.1, 0.1));
 
+    // add a mesh component (directly on the world for now)
     world->addComponent<C_Mesh>() -> mesh = cube; 
 
     // light
-
     GameObject light;
-
     auto* lightComponent = light->addComponent<C_Light>();
     lightComponent->light.color = glm::vec3(1.0, 1.0, 1.0);
     light->addComponent<C_Transform>()->setPosition(glm::vec3(10.0, 10.0, 5.0));
 
-    world->addChild(std::move(light)); // On donne l'ownership de la lumière au world
-    lightComponent->light.intensity = 100.0; // mais on peut encore la modifier de manière valide.
+    world->addChild(std::move(light)); // We give the light to the world (amen)
+    lightComponent->light.intensity = 100.0; // but the discarded object is still valid to use as a non-owning pointer to the gameobject
 
-    scene.setRoot(std::move(world));
-    game.setScene(std::move(scene)); // on donne l'ownership de la scène au jeu
+    scene.setRoot(std::move(world)); // we give the world to the scene
+    game.setScene(std::move(scene)); // and the scene to the game
 }
 ```
 
-On obtient la scène suivante :
+We get the following scene:
 
-<img width="1253" height="752" alt="image" src="https://github.com/user-attachments/assets/b7573937-311c-4c0c-a028-f8245cca8fe3" />
+<img width="1253" height="752" alt="one cube in the void" src="https://github.com/user-attachments/assets/b7573937-311c-4c0c-a028-f8245cca8fe3" />
 
 
-A partir de là, on pourrait par exemple ajouter de la physique, une skybox avec des cubemaps, des interactions utilisateur  l'aide de la classe Input (voir l'exemple dans la partie suivante).
+From there, we could add more components to further customize the behavior of our gameobjects.
 
-### Implementing and assigning behaviors
+### Implementing new behaviors
 
-Afin de customiser les comportements des objets, on peut créer de nouveaux composants, par héritage de la classe *Component*. Cette classe possède cinq fonctions virtuelles que l'utilisateur peut override pour exécuter la logique qu'il souhaite :
-- *onEnterScene() et onExitScene()*, sont appelées respectivement quand le composant entre et sort de la scène (ou est détruit)
-- *onUpdate($Delta_t$)), onPhysicsUpdate($Delta_t$) et onLateUpdate($Delta_t$)* sont appelées à différentes étapes de la boucle de mise à jour. Pour l'instant, elles le sont de manière synchrone. Dans le futur, la physique et le rendu seront sur deux threads séparés donc l'ordre d'exécution et les $Delta_t$ ne seront pas forcément les mêmes.
+In order to customize the behavior of the gameobjects in our world, we can create new components. We do this by inheriting from the *Component* class.
+
+This gives us five virtual functions that we may override to our liking :
+
+- *onEnterScene() & onExitScene()*, called when the owning gameobject enters or exits a scene
+- *onUpdate($\Delta_t$)), onPhysicsUpdate($\Delta_t$) et onLateUpdate($\Delta_t$)* are called at different stages of the frame's computation.
+
+> For now, the update functions are called synchronously. In the future, *update* and *physicsUpdate* will each have their own thread.
+
+By inheriting other components (and creating new virtual functions to override), we can easily and organically expand the capabilities of our gameobjects. 
+
+For example, the *C_RigidBody* Component offers an *onContact(Contact)* function, which allows inheriting components to execute code on a physics collision.
 
 Les composants peuvent évidemment hériter d'autres composants, et créer de nouvelles fonctions virtuelles pour offrir des options aux composants héritants, par exemple, la classe de composant *C_RigidBody* offre une fonction *onContact(contact c)* qui permet à un composant en héritant d'exécuter du code sur une collision physique.
 
-Voici un exemple de composant utilisateur :
+ Let's create a player controller component. This also demonstrates the user inputs system:
 
 ```cpp
 class C_PlayerController: public Component {
 public:
-
     float movement_speed = 2.0;
     void jump();
 
     void inputCallback(const InputEvent & e){
-
         if (e == "move_up" && e.pressed() && isOnGround){
-            jump();
-   
+            jump(); 
     }
     C_PlayerController(){
       // Exemple d'utilisation du gestionnaires d'entrées utilisateur.
-      // Une lambda est nécessaire car les méthodes sont pas génériquement pointables pour c++
+      // The lambda is necessary as we can't cast a method to a generic function signature.
       Input::addInputListener(
-          [& /*capture l'objet ambient*/](const InputEvent & e){
+          [& /*capture ambient scope*/](const InputEvent & e){
               inputCallback(e);
           }
       );
