@@ -170,8 +170,8 @@ Then, we just need to add this component to a gameobject in order to move it aro
 > - C_PlayerController\*
 > - C_MapManager\*
 > - C_voxelMesh\*
-> - 
-> _\*créés pour la démo technique du sous marin_
+> 
+> _\*created for the 'voxel submarine' demo_
 >
 > In the future, we'd like to create a diverse and extensive library of authored components.
 
