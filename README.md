@@ -1,7 +1,7 @@
 # Fisheye Engine
 <img width="814" height="725" alt="fisheye logo" src="https://github.com/user-attachments/assets/5263b36a-cd05-40bf-9dc1-ac26ad6d597f" />
 
-Fisheye is a 3D game engine written and usable in C++. The intention was to create an easy to use, performant, and customizable platform for game developement.
+Fisheye is a 3D game engine written and usable in C++. The intent was to create an easy to use, performant, and customizable platform for game developement.
 
 > This is a university project made by two people in ~two months.
 > 
@@ -9,9 +9,12 @@ Fisheye is a 3D game engine written and usable in C++. The intention was to crea
 
 ## Features
 
+- *Scene graph, gameobjects and components*
+  A game is composed of tree-like *scenes*; hierarchies of *gameobjects*, using an Entity-Component approach (as in Unity)
 
+- Rendering and physics server for efficient processing
 
-> The physics engine is still experimental. Things may not work as expected.
+> The physics engine is still experimental. Things may not work as expected (particularily rotation-wise :s )
 
 ## How To Use
 
