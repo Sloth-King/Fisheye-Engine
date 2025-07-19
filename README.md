@@ -20,16 +20,17 @@ Fisheye is a 3D game engine written and usable in C++. The intent was to create 
 - *Physics engine*
 
   Our physics engine runs on its own loop and is partly inspired on a Valve talk on the Source engine, in order to compute and solve collisions efficiently.
+  
+  > The physics engine is still experimental. Things may not work as expected (particularily rotation-wise :s )
+  >
+  > For now, the physics update loop runs on the same thread as the render update loop. This will change in the future.
 
 - *Rendering and physics servers*
 
   For efficient processing of batch operations, we took inspiration from ECS architecture and the Godot game engine. Rendering code and physics-related code is ran by *servers* akin to ECS systems, which work fluidly around the scene hierarchy and result in more efficient processing.
 
-> The physics engine is still experimental. Things may not work as expected (particularily rotation-wise :s )
->
-> For now, the physics update loop runs on the same thread as the render update loop. This will change in the future.
-
 - *Additional demo candy*
+
   A fully functional voxel and chunking system, with simple world generation based on noise functions, has been implemented for the 'voxel submarine' demo. The demo and its components are also present 
 
 ## How To Use
