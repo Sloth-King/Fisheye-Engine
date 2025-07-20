@@ -116,13 +116,11 @@ In order to customize the behavior of the gameobjects in our world, we can creat
 This gives us five virtual functions that we may override to our liking :
 
 - *onEnterScene() & onExitScene()*, called when the owning gameobject enters or exits a scene
-- *onUpdate($\Delta_t$)), onPhysicsUpdate($\Delta_t$) et onLateUpdate($\Delta_t$)* are called at different stages of the frame's computation.
+- *onUpdate($\delta_t$)), onPhysicsUpdate($\delta_t$) et onLateUpdate($\delta_t$)* are called at different stages of the frame's computation.
 
 By inheriting other components (and creating new virtual functions to override), we can easily and organically expand the capabilities of our gameobjects. 
 
 For example, the *C_RigidBody* Component offers an *onContact(Contact)* function, which allows inheriting components to execute code on a physics collision.
-
-Les composants peuvent évidemment hériter d'autres composants, et créer de nouvelles fonctions virtuelles pour offrir des options aux composants héritants, par exemple, la classe de composant *C_RigidBody* offre une fonction *onContact(contact c)* qui permet à un composant en héritant d'exécuter du code sur une collision physique.
 
  Let's create a player controller component. This also demonstrates the user inputs system:
 
