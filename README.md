@@ -6,6 +6,9 @@ Fisheye is a 3D game engine written and usable in C++. The intent was to create 
 > This is a university project made by two people in ~two months.
 > 
 > No generative AI was used in the making of this project.
+>
+<img width="814" height="725" alt="fisheye demo" src="https://github.com/user-attachments/assets/4849ba37-ce2f-4e5c-99e7-c87c9881cab5" />
+
 
 ## Features
 
@@ -24,6 +27,10 @@ Fisheye is a 3D game engine written and usable in C++. The intent was to create 
   > The physics engine is still experimental. Things may not work as expected (particularily rotation-wise :s )
   >
   > For now, the physics update loop runs on the same thread as the render update loop. This will change in the future.
+  >
+  <img width="814" height="725" alt="fisheye physics" src="https://github.com/user-attachments/assets/19544e2d-84ba-48f3-9e5d-f314a481b404" />
+
+
 
 - *Rendering and physics servers*
 
